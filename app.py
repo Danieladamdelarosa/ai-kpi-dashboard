@@ -109,7 +109,14 @@ with st.sidebar:
     if st.session_state.get("api_key_input"):
         os.environ["OPENAI_API_KEY"] = st.session_state["api_key_input"]
 
-df = load_data(uploaded, "data/novatech_kpis.csv")
+# Try to load uploaded file, fall back to local dataset if it exists
+sample_path = "data/novatech_kpis.csv"
+
+if not uploaded and not os.path.exists(sample_path):
+    st.warning("⚠️ No sample data found. Please upload your CSV to continue.")
+    st.stop()
+
+df = load_data(uploaded, sample_path if os.path.exists(sample_path) else None)
 kpis = compute_kpis(df)
 
 # KPI row
