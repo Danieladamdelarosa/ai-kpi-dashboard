@@ -57,20 +57,39 @@ def describe_dataframe(df: pd.DataFrame) -> str:
             lines.append(f"{c}: mean={df[c].mean():.2f}, min={df[c].min():.2f}, max={df[c].max():.2f}")
     return "\n".join(lines)
 
-def ask_gpt(question: str, df: pd.DataFrame, kpis: dict) -> str:
-    if not OPENAI_API_KEY:
-        return "Set your OpenAI API key to use the conversational analysis. See README for instructions."
     try:
         # Lazy import to avoid dependency if not used
         from openai import OpenAI
         client = OpenAI(api_key=OPENAI_API_KEY)
+
         # Provide a compact data synopsis to the model
         synopsis = describe_dataframe(df)
+
         # Few-shot examples
         system = (
             "You are an analyst assisting an IT manager. "
             "Use the provided KPI synopsis to answer questions about performance in clear, plain English. "
             "Be concise, cite numbers when relevant, and explain trends."
+        )
+
+        user = f"""KPI SYNOPSIS
+{synopsis}
+
+QUESTION
+{question}
+"""
+
+        resp = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {"role": "system", "content": system},
+                {"role": "user", "content": user}
+            ],
+            temperature=0.2,
+            max_tokens=300
+        )
+        return resp.choices[0].message.content.strip()
+
         )
        user = f"""KPI SYNOPSIS
 {synopsis}
