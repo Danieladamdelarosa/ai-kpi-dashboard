@@ -72,12 +72,12 @@ def ask_gpt(question: str, df: pd.DataFrame, kpis: dict) -> str:
             "Use the provided KPI synopsis to answer questions about performance in clear, plain English. "
             "Be concise, cite numbers when relevant, and explain trends."
         )
-        user = f\"\"\"KPI SYNOPSIS
+       user = f"""KPI SYNOPSIS
 {synopsis}
 
 QUESTION
 {question}
-\"\"\"
+"""
         resp = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
