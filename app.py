@@ -109,7 +109,7 @@ with st.sidebar:
     if st.session_state.get("api_key_input"):
         os.environ["OPENAI_API_KEY"] = st.session_state["api_key_input"]
 
-df = load_data(uploaded, "data/sample_kpis.csv")
+df = load_data(uploaded, "data/novatech_kpis.csv")
 kpis = compute_kpis(df)
 
 # KPI row
